@@ -10,10 +10,10 @@ const pusher = new Pusher({
     useTLS : true
 })
 
-router.post('/chat', (req, res) => {
+router.post('/api/chat', (req, res) => {
     const { id, message } = req.body
     pusher.trigger('chat-room', 'new-message', {id, message})
-    res.send('Message Send')
+    res.send({msg : 'Message Send'})
 })
 
 module.exports = router
