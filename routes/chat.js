@@ -12,7 +12,8 @@ const pusher = new Pusher({
 
 router.post('/api/chat', (req, res) => {
     const { id, message } = req.body
-    pusher.trigger('chat-room', 'new-message', {id, message})
+    const socket_id = req.headers['x-socket-id']
+    pusher.trigger('chat-room', 'new-message', {id, message}, {socket_id})
     res.send({msg : 'Message Send'})
 })
 
