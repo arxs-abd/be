@@ -4,8 +4,9 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 
-const routeChat = require('./routes/chat')
 const routeAuth = require('./routes/auth')
+const routeChat = require('./routes/chat')
+const routeConversation = require('./routes/conversation')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -21,6 +22,7 @@ app.use(bodyParser.urlencoded({
 
 app.use(routeAuth)
 app.use(routeChat)
+app.use(routeConversation)
 
 const server = app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

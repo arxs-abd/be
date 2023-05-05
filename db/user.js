@@ -17,6 +17,15 @@ const service = {
         const result = await connection.query(query)
         return result.rows[0].id
     },
+    find : async (id) => {
+        const query = {
+            text : 'SELECT * FROM  users WHERE id = $1',
+            values : [id],
+        }
+
+        const result = await connection.query(query)
+        return result.rows[0]
+    },
     findWhere : async (username) => {
         const query = {
             text : 'SELECT * FROM  users WHERE username = $1',
