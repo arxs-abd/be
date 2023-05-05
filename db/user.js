@@ -1,12 +1,11 @@
 const { Pool } = require('pg')
 const {v4 : uuid} = require('uuid')
 
-const connection = new Pool({
-    connectionString : process.env.POSTGRES_URL + '?sslmode=require',
-})
-
 const service = {
     add : async (username, password) => {
+        const connection = new Pool({
+            connectionString : process.env.POSTGRES_URL + '?sslmode=require',
+        })
         const id = 'user-' + uuid()
 
         const query = {
@@ -15,6 +14,7 @@ const service = {
         }
 
         const result = await connection.query(query)
+        await connection.end()
         return result.rows[0].id
     },
     find : async (id) => {
@@ -22,8 +22,12 @@ const service = {
             text : 'SELECT * FROM  users WHERE id = $1',
             values : [id],
         }
+        const connection = new Pool({
+            connectionString : process.env.POSTGRES_URL + '?sslmode=require',
+        })
 
         const result = await connection.query(query)
+        await connection.end()
         return result.rows[0]
     },
     findWhere : async (username) => {
@@ -31,8 +35,12 @@ const service = {
             text : 'SELECT * FROM  users WHERE username = $1',
             values : [username],
         }
+        const connection = new Pool({
+            connectionString : process.env.POSTGRES_URL + '?sslmode=require',
+        })
 
         const result = await connection.query(query)
+        await connection.end()
         return result.rows[0]
     }   
 }
