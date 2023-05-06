@@ -1,20 +1,16 @@
-// require('../utils/db')
-// require('dotenv').config()
-// const bcryptjs = require('bcryptjs')
-// const { User } = require('../models/user')
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-const userService = require('../db/user')
-const conversationService = require('../db/conversation')
+const User = require('../model/user')
+const Conversation = require('../model/conversation')
 
 const login = async (req, res) => {
     const {username, password} = req.body
-    const user = await userService.findWhere(username)
+    const user = await User.findOne({username})
 
-    if (!user) return res.status(404).send({
+    if (!user) return res.status(403).send({
         status : 'fail',
-        msg : 'User Not Found'
+        msg : 'Username not Found'
     })
 
     if (! await bcryptjs.compare(password, user.password)) return res.status(403).send({
@@ -23,7 +19,7 @@ const login = async (req, res) => {
     })
 
     const data = {
-        id : user.id,
+        id : user._id,
         username : user.username,
     }
 
@@ -41,28 +37,35 @@ const register = async (req, res) => {
     const salt = bcryptjs.genSaltSync(10)
     const newPassword = bcryptjs.hashSync(password, salt)
 
-    const id = await userService.add(username, newPassword)
-    return res.send({id})
+    const data = {username, password : newPassword}
+    const newUser = new User(data)
+    await newUser.save()
+    return res.send({
+        status : 'success',
+        msg : 'User has been added'
+    })
     
 }
 
 const findUser = async (req, res) => {
     const {username} = req.query
-    const user = await userService.findWhere(username)
-
+    
+    const user = await User.findOne({username})
     if (!user) return res.status(404).send({
         status : 'fail',
         msg : 'User Not Found'
     })
 
-    const user1 = req.user.id
-    const user2 = user.id
+    const user1_id = req.user.id
+    const user2_id = user.id
+    const data = {user1_id, user2_id}
+    const chatId = new Conversation(data)
 
-    const chatId = await conversationService.add(user1, user2)
+    await chatId.save()
 
     return res.send({
         status : 'success',
-        data : chatId
+        data : chatId._id
     })
 }
 

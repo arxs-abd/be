@@ -1,20 +1,29 @@
 const Pusher = require('pusher')
-const conversationServie = require('../db/conversation')
-const userService = require('../db/user')
-const messageService = require('../db/message')
+
+const Messages = require('../model/message')
 
 const pusher = new Pusher({
-    appId : '1590754',
-    key : '914eb719506342bd7d28',
-    secret : '414ef2d8654d3237e5aa',
-    cluster : 'ap1',
+    appId : process.env.PUSHER_APP_ID,
+    key : process.env.PUSHER_KEY,
+    secret : process.env.PUSHER_SECRET,
+    cluster : process.env.PUSHER_CLUSTER,
     useTLS : true
 })
 
 const addChat = async (req, res) => {
     const {conversationId, id, message} = req.body
     const socket_id = req.headers['x-socket-id']
-    const result = await messageService.add(conversationId, id, message)
+
+    const data = {
+        conversation_id : conversationId,
+        sender_id : id,
+        message,
+        created_at : new Date().toISOString()
+
+    }
+
+    const result = new Messages(data)
+    await result.save()
 
     pusher.trigger('chat-room', conversationId, result, {socket_id})
     return res.send({
