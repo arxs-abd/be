@@ -25,7 +25,7 @@ const addChat = async (req, res) => {
     const result = new Messages(data)
     await result.save()
 
-    pusher.trigger('chat-room', conversationId, result, {socket_id})
+    pusher.trigger('presence-chat-room', conversationId, result, {socket_id})
     return res.send({
         status : 'success',
         message : result

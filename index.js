@@ -7,9 +7,10 @@ const cors = require('cors')
 const routeAuth = require('./routes/auth')
 const routeChat = require('./routes/chat')
 const routeConversation = require('./routes/conversation')
+const routeStatus = require('./routes/status')
 
 const app = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3001
 
 app.use(cors({
   origin: '*'
@@ -23,6 +24,8 @@ app.use(bodyParser.urlencoded({
 app.use(routeAuth)
 app.use(routeChat)
 app.use(routeConversation)
+app.use(routeStatus)
+
 
 const server = app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
