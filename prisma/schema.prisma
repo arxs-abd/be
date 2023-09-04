@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id Int @id
+  username String
+  password String
+}
+
+model Conversation {
+  id Int @id
+  user1_id Int
+  user2_id Int
+}
+
+model Message {
+  id Int @id
+  conversation_id Int
+  sender_id Int
+  message String
+  created_at String
+}
