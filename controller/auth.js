@@ -99,7 +99,7 @@ const getToken = async (req, res) => {
     });
     at.addGrant({ roomJoin: true, room: roomName });
 
-    return res.response({
+    return res.send({
       token : at.toJwt() 
     })
 }
