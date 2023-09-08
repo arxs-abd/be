@@ -3,6 +3,7 @@ const Pusher = require('pusher')
 const Messages = require('../model/message')
 const Conversation = require('../model/conversation')
 const { createChatAndTime } = require('../utils/helper')
+const User = require('../model/user')
 
 const pusher = new Pusher({
   appId: process.env.PUSHER_APP_ID,
@@ -55,7 +56,25 @@ const getAllChat = async (req, res) => {
   })
 }
 
+const createCall = async (req, res) => {
+  const { conversationId, id } = req.body
+  const socket_id = req.headers['x-socket-id']
+  const user = await User.findById(id)
+  const data = {
+    // user,
+    sender_id: id,
+    user : user.username
+  }
+
+  pusher.trigger('presence-call-room', conversationId, data, { socket_id })
+  return res.send({
+    status: 'success',
+    message: data,
+  })
+}
+
 module.exports = {
   addChat,
   getAllChat,
+  createCall
 }
