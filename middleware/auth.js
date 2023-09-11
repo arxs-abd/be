@@ -12,6 +12,7 @@ const authenticate = (req, res, next) => {
     })
 
   jwt.verify(token, process.env.ACCESS_TOKEN, (err, result) => {
+    // console.log(token)
     if (err)
       return res.status(403).send({
         status: 'error',

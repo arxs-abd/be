@@ -73,6 +73,33 @@ const createCall = async (req, res) => {
   })
 }
 
+const rejectCall = async (req, res) => {
+  const { conversationId } = req.body
+  const socket_id = req.headers['x-socket-id']
+  const data = {
+    statusCall : 'reject',
+  }
+  pusher.trigger('presence-call-room', conversationId, data, { socket_id })
+  return res.send({
+    status: 'success',
+    callStatus : 'reject',
+    message: data,
+  })
+}
+const stopCall = async (req, res) => {
+  const { conversationId } = req.body
+  const socket_id = req.headers['x-socket-id']
+  const data = {
+    statusCall : 'stop',
+  }
+  pusher.trigger('presence-call-room', conversationId, data, { socket_id })
+  return res.send({
+    status: 'success',
+    callStatus : 'reject',
+    message: data,
+  })
+}
+
 const getToken = (req, res) => {
   const {roomName, name} = req.body
 
@@ -89,5 +116,7 @@ module.exports = {
   addChat,
   getAllChat,
   createCall,
-  getToken
+  getToken,
+  rejectCall,
+  stopCall
 }
