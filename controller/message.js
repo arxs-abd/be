@@ -1,5 +1,5 @@
 const Pusher = require('pusher')
-
+const {AccessToken} = require('livekit-server-sdk')
 const Messages = require('../model/message')
 const Conversation = require('../model/conversation')
 const { createChatAndTime } = require('../utils/helper')
@@ -73,8 +73,21 @@ const createCall = async (req, res) => {
   })
 }
 
+const getToken = (req, res) => {
+  const {roomName, name} = req.body
+
+  const at = new AccessToken(process.env.LIVEKIT_KEY, process.env.LIVEKIT_SERVER, {
+    identity: name,
+  })
+  at.addGrant({ roomJoin: true, room: roomName })
+    res.send({
+        token : at.toJwt()
+    });
+}
+
 module.exports = {
   addChat,
   getAllChat,
-  createCall
+  createCall,
+  getToken
 }
