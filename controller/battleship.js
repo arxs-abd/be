@@ -142,10 +142,16 @@ const responseMove = async (req, res) => {
     const {id, position, result, roomId} = req.body
     const data = {id, position, result}
     pusher.trigger('battleship-room-' + roomId, 'attack-response', data)
+    return res.send({
+        msg : 'Berhasil Melakukan Response'
+    })
 }
 
 const deleteAllRoom = async (req, res) => {
     allRoom = {}
+    return res.send({
+        msg : 'Berhasil Menghapus Room'
+    })
 }
 
 module.exports = {createRoom, joinRoom, readyPlay, move, responseMove, deleteAllRoom}
