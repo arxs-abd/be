@@ -70,8 +70,10 @@ const joinRoom = async (req, res) => {
 }
 
 const readyPlay = async (req, res) => {
+    console.log({allRoom})
     const {roomId, id} = req.body
     const socket_id = req.headers['x-socket-id']
+    console.log(allRoom[roomId])
 
     if (allRoom[roomId].player1.id === id) {
         allRoom[roomId].player1.status = 'ready'
