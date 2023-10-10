@@ -3,6 +3,7 @@ const { generateRandomString } = require('../utils/helper')
 
 let allRoom = {}
 const MAX_ROOM = 25
+const PREFIX_CHANNEL = 'presence-battleship-room-'
 const pusher = new Pusher({
     appId : process.env.PUSHER_APP_ID,
     key : process.env.PUSHER_KEY,
@@ -60,11 +61,17 @@ const joinRoom = async (req, res) => {
     }
     const data = {
         id,
+        username,
         msg : 'Anda Sudah Mempunyai Lawan'
     }
-    pusher.trigger('battleship-room-' + roomId, 'join', data)
+
+    pusher.trigger(PREFIX_CHANNEL + roomId, 'join', data)
+    const opponentUsername = allRoom[roomId].player1.username
+    const opponentId = allRoom[roomId].player1.id
     return res.send({
         id,
+        oppId : opponentId,
+        oppUsername : opponentUsername,
         msg : 'Berhasil Bergabung di Room',
     })
 }
@@ -83,7 +90,7 @@ const readyPlay = async (req, res) => {
                 id : allRoom[roomId].player1.id,
                 msg : 'Menunggu Lawan'
             }
-            pusher.trigger('battleship-room-' + roomId, 'start', data, { socket_id })
+            pusher.trigger(PREFIX_CHANNEL + roomId, 'start', data, { socket_id })
             return res.send({
                 msg : 'Memulai Game',
                 status : 'play'
@@ -93,7 +100,7 @@ const readyPlay = async (req, res) => {
             id : allRoom[roomId].player1.id,
             msg : 'Lawan Anda Sudah Siap'
         }
-        pusher.trigger('battleship-room-' + roomId, 'opponent-ready', data, { socket_id })
+        pusher.trigger(PREFIX_CHANNEL + roomId, 'opponent-ready', data, { socket_id })
         return res.send({
             msg : 'Menunggu Lawan Siap'
         })
@@ -106,7 +113,7 @@ const readyPlay = async (req, res) => {
                 id : allRoom[roomId].player2.id,
                 msg : 'Menunggu Lawan'
             }
-            pusher.trigger('battleship-room-' + roomId, 'start', data, { socket_id })
+            pusher.trigger(PREFIX_CHANNEL + roomId, 'start', data, { socket_id })
             return res.send({
                 msg : 'Memulai Game',
                 status : 'play'
@@ -116,7 +123,7 @@ const readyPlay = async (req, res) => {
             id : allRoom[roomId].player2.id,
             msg : 'Lawan Anda Sudah Siap'
         }
-        pusher.trigger('battleship-room-' + roomId, 'opponent-ready', data, { socket_id })
+        pusher.trigger(PREFIX_CHANNEL + roomId, 'opponent-ready', data, { socket_id })
         return res.send({
             msg : 'Menunggu Lawan Siap'
         })
@@ -135,15 +142,26 @@ const move = async (req, res) => {
     const data = {
         id, attack
     }
-    pusher.trigger('battleship-room-' + roomId, 'attack', data)
+    pusher.trigger(PREFIX_CHANNEL + roomId, 'attack', data)
 
     return res.send({roomId, attack, id})
+}
+
+const leftRoom = async (req, res) => {
+    const {roomId} = req.body
+
+    delete allRoom[roomId]
+    console.log('Menghapus Room dengan id', roomId)
+    return res.send({
+        roomId, 
+        msg : 'Lawan Meninggalkan Room'
+    })
 }
 
 const responseMove = async (req, res) => {
     const {id, position, result, roomId} = req.body
     const data = {id, position, result}
-    pusher.trigger('battleship-room-' + roomId, 'attack-response', data)
+    pusher.trigger(PREFIX_CHANNEL + roomId, 'attack-response', data)
     return res.send({
         msg : 'Berhasil Melakukan Response'
     })
@@ -156,4 +174,22 @@ const deleteAllRoom = async (req, res) => {
     })
 }
 
-module.exports = {createRoom, joinRoom, readyPlay, move, responseMove, deleteAllRoom}
+const getAllRoom = async (req, res) => {
+    return res.send({
+        allRoom
+    })
+}
+
+const auth = (req, res) => {
+    console.log(req.query)
+    const socketId = req.body.socket_id
+    const channel = req.body.channel_name
+    const user_id = req.body.user_id
+    const username = req.body.username
+    const presenceData = { user_id, userInfo : {username} }
+    const authResponse = pusher.authorizeChannel(socketId, channel, presenceData)
+    // console.log(authResponse)
+    return res.send(authResponse)
+}
+
+module.exports = {createRoom, joinRoom, readyPlay, move, responseMove, deleteAllRoom, leftRoom, auth, getAllRoom}
