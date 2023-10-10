@@ -170,13 +170,13 @@ const responseMove = async (req, res) => {
 const deleteAllRoom = async (req, res) => {
     allRoom = {}
     return res.send({
-        msg : 'Berhasil Menghapus Room'
+        msg : 'Berhasil Menghapus Semua Room'
     })
 }
 
 const getAllRoom = async (req, res) => {
     return res.send({
-        allRoom
+        count : Object.keys(allRoom).length
     })
 }
 
