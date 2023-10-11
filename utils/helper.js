@@ -14,16 +14,25 @@ const createChatAndTime = (message) => {
 
   return result
 }
-function generateRandomString(length) {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  let result = ''
-  const charactersLength = characters.length
 
-  for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * charactersLength)
-      result += characters.charAt(randomIndex)
-  }
+const generateRandomString = (length) => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let result = ''
+    const charactersLength = characters.length
 
-  return result
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charactersLength)
+        result += characters.charAt(randomIndex)
+    }
+
+    return result
 }
-module.exports = { createChatAndTime, generateRandomString }
+
+const delay = (time) => {
+  return new Promise(resolve => {
+    setTimeout(resolve, time)
+  })
+}
+
+
+module.exports = { createChatAndTime, generateRandomString, delay }
