@@ -3,6 +3,7 @@ const { generateRandomString, delay } = require('../utils/helper')
 
 let allRoom = {}
 const MAX_ROOM = 25
+const DELAY = 300
 const PREFIX_CHANNEL = 'presence-battleship-room-'
 const pusher = new Pusher({
     appId : process.env.PUSHER_APP_ID,
@@ -134,7 +135,7 @@ const readyPlay = async (req, res) => {
 }
 
 const move = async (req, res) => {
-    await delay(1000)
+    await delay(DELAY)
     const {roomId, attack, id} = req.body
 
     if (!allRoom[roomId]) return res.send({
@@ -160,7 +161,7 @@ const leftRoom = async (req, res) => {
 }
 
 const responseMove = async (req, res) => {
-    await delay(1000)
+    await delay(DELAY)
     const {id, position, result, roomId} = req.body
     const data = {id, position, result}
     pusher.trigger(PREFIX_CHANNEL + roomId, 'attack-response', data)
